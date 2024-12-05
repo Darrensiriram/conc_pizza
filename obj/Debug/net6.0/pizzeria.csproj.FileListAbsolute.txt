@@ -1,0 +1,14 @@
+C:\Users\darrens\Documents\pizzeria_student\obj\Debug\net6.0\pizzeria.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\darrens\Documents\pizzeria_student\obj\Debug\net6.0\pizzeria.AssemblyInfoInputs.cache
+C:\Users\darrens\Documents\pizzeria_student\obj\Debug\net6.0\pizzeria.AssemblyInfo.cs
+C:\Users\darrens\Documents\pizzeria_student\obj\Debug\net6.0\pizzeria.csproj.CoreCompileInputs.cache
+C:\Users\darrens\Documents\pizzeria_student\bin\Debug\net6.0\pizzeria.exe
+C:\Users\darrens\Documents\pizzeria_student\bin\Debug\net6.0\pizzeria.deps.json
+C:\Users\darrens\Documents\pizzeria_student\bin\Debug\net6.0\pizzeria.runtimeconfig.json
+C:\Users\darrens\Documents\pizzeria_student\bin\Debug\net6.0\pizzeria.dll
+C:\Users\darrens\Documents\pizzeria_student\bin\Debug\net6.0\pizzeria.pdb
+C:\Users\darrens\Documents\pizzeria_student\obj\Debug\net6.0\pizzeria.dll
+C:\Users\darrens\Documents\pizzeria_student\obj\Debug\net6.0\refint\pizzeria.dll
+C:\Users\darrens\Documents\pizzeria_student\obj\Debug\net6.0\pizzeria.pdb
+C:\Users\darrens\Documents\pizzeria_student\obj\Debug\net6.0\pizzeria.genruntimeconfig.cache
+C:\Users\darrens\Documents\pizzeria_student\obj\Debug\net6.0\ref\pizzeria.dll
