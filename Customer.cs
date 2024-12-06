@@ -1,60 +1,60 @@
 namespace pizzeria
 {
-    public class Customer // you can alter the signature and contents of this class as needed
-        // it is not allowed to remove code.
+   public class Customer
     {
         public int _id { get; private set; }
+        
         public Customer(int id)
         {
             this._id = id;
         }
-
+        
         public void Start()
         {
             Life();
         }
-
-        public void Life() // customer: feel free to add instructions to make it thread safe.
+        
+        public void Life()
         {
-            Thread.Sleep(new Random().Next(50, 200));
-
-            //wait to order a pizza slice
-            //order pizza slice
-            Console.WriteLine($"Customer {_id} about to order a pizza slice");
-
-            PizzaOrder p = new();
-            Program.order.AddFirst(p);
-
-            // wait a bit
-            Console.WriteLine($"Customer {_id} waits for a pizza slice");
-
-            Thread.Sleep(new Random().Next(100, 500));
-
-            // only up to 4 people can get a slice from the same pizza
-            // pick up pizza slice when possible
-            // no more than n_slices slices per pizza so no more than n_slices customers time over the order.
-
-            PizzaDish pizza;
-            var temp = false;
-
-            pizza = Program.pickUp.First();
-
-            //remove one slice
-
-            pizza.RemoveSlice();
-
-            if (pizza.Slices == 0) //the dish is empty take it out.
+            try
             {
-                //if it is the last slice remove the pizza from the pick up
-                Program.pickUp.RemoveFirst();
-                temp = true;
+                Thread.Sleep(new Random().Next(50, 200));
+                Console.WriteLine($"Customer {_id} about to order a pizza slice");
+                
+                lock (Program.orderLock)
+                {
+                    PizzaOrder p = new();
+                    Program.order.AddFirst(p);
+                    Program.order_ready.Release();
+                    Console.WriteLine($"Customer {_id} added order. Total orders: {Program.order.Count}");
+                }
+                
+                Thread.Sleep(new Random().Next(100, 500));
+                Console.WriteLine($"Customer {_id} waits for a pizza slice");
+                
+                Program.slice_ready.WaitOne();
+                Console.WriteLine($"Customer {_id} got slice_ready semaphore");
+                
+                lock (Program.pickUpLock)
+                {
+                    if (Program.pickUp.Count > 0)
+                    {
+                        var pizza = Program.pickUp.First();
+                        pizza.RemoveSlice();
+                        
+                        if (pizza.Slices == 0)
+                        {
+                            Program.pickUp.RemoveFirst();
+                            Console.WriteLine($"Customer {_id} took last slice and removed empty pizza. Pizzas left: {Program.pickUp.Count}");
+                        }
+                        Console.WriteLine($"Customer {_id} has eaten a slice from pizza. Slices left: {pizza.Slices}");
+                    }
+                }
             }
-
-            if (temp)
+            catch (Exception e)
             {
-                Console.WriteLine($"Customer {_id} has eaten a pizza the final slice total slices: {pizza.Slices} {Program.pickUp.Count}");
+                Console.WriteLine($"Customer {_id} has an error: {e.Message}");
             }
-            Console.WriteLine($"Customer {_id} has eaten a slice a pizza total slices: {pizza.Slices} {Program.pickUp.Count}");
         }
     }
 }

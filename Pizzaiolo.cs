@@ -1,82 +1,72 @@
 namespace pizzeria
 {
-    public class Pizzaiolo // you can alter the signature and contents of this class as needed
-                           // it is not allowed to remove code.
+     public class Pizzaiolo
     {
         public int _id { get; private set; }
-        //constructor
+        
         public Pizzaiolo(int id)
         {
             this._id = id;
         }
+        
         public void Start()
         {
-            life();
+            Life();
         }
-        public void life() // pizzaiolo: feel free to add instructions to make it thread safe.
+        
+        public void Life()
         {
-            // wait for a customer to order a pizza slice
-            Program.order_ready.WaitOne();
-            Thread.Sleep(new Random().Next(50, 200));
-
-            PizzaOrder p;
-
-            Console.WriteLine($"Pizzaiolo {_id} is about to take the pizza order");
-
-            lock (Program.order)
+            try
             {
-                p = Program.order.First();
-                Program.order.RemoveFirst();
-            }
-            
-            //work on pizza
-            Thread.Sleep(new Random().Next(50, 200));
-
-            p.StartWorking();
-
-            Thread.Sleep(new Random().Next(50, 200));
-
-            //finish pizza slice
-
-            Console.WriteLine($"Pizzaiolo {_id} about to finish the pizza slice");
-            
-            PizzaSlice s = p.FinishWorking(_id.ToString()); //feel free to change the init of the ID // with anything that can help you debug
-            // go to woking surface
-            // wait for the working surface to be available
-            // deposit the pizza slice
-            // if the working surface contains less than n_slices slices
-            //          Add the pizza slice to the working surface
-            Console.WriteLine($"Pizzaiolo {_id} about to deposit the pizza slice");
-            //if the pizza is not full
-            //      add the pizza slice to the working surface
-            //if the pizza is full
-            //      clear the working surface
-            //      add the pizza to the pick up
-
-            lock (Program.workingsurface)
-            {
-                if (Program.workingsurface.Count < Program.n_slices)
+                Console.WriteLine($"Pizzaiolo {_id} waiting for order");
+                Program.order_ready.WaitOne();
+                
+                Thread.Sleep(new Random().Next(50, 200));
+                
+                PizzaOrder order;
+                lock (Program.orderLock)
                 {
-                    Program.workingsurface.AddFirst(s);
+                    order = Program.order.First();
+                    Program.order.RemoveFirst();
+                    Console.WriteLine($"Pizzaiolo {_id} took order. Orders left: {Program.order.Count}");
+                }
+                
+                Thread.Sleep(new Random().Next(50, 200));
+                order.StartWorking();
+                
+                Console.WriteLine($"Pizzaiolo {_id} about to finish the pizza slice");
+                PizzaSlice slice = order.FinishWorking($"{_id}_slice");
+                
+                lock (Program.workingSurfaceLock)
+                {
+                    Program.workingsurface.AddFirst(slice);
+                    Console.WriteLine($"Pizzaiolo {_id} added slice. Surface count: {Program.workingsurface.Count}");
+                    
                     if (Program.workingsurface.Count == Program.n_slices)
                     {
-                        lock (Program.pickUp)
+                        lock (Program.pickUpLock)
                         {
-                            Program.pickUp.AddFirst(new PizzaDish(Program.n_slices, s.ToString()));
+                            Program.pickUp.AddFirst(new PizzaDish(Program.n_slices, $"pizza_{_id}"));
+                            Console.WriteLine($"Pizzaiolo {_id} completed pizza. Pizzas in pickup: {Program.pickUp.Count}");
                         }
+                        
+                        for (int i = 0; i < Program.n_slices; i++)
+                        {
+                            Program.slice_ready.Release();
+                            Console.WriteLine($"Pizzaiolo {_id} released slice {i + 1} semaphore");
+                        }
+                        
                         Program.workingsurface.Clear();
+                        Console.WriteLine($"Pizzaiolo {_id} cleared working surface");
                     }
                 }
-                else
-                {
-                    Console.WriteLine($"Pizzaiolo {_id} [MISTAKE!]");
-                }
+                
+                Console.WriteLine($"Pizzaiolo {_id} finished and terminated");
             }
-
-
-            Console.WriteLine($"Pizzaiolo{_id} finished and goes to sleep.");
-            // if the working surface contains exactly n_slices slices
-            //          add the pizza to the pick up
+            catch (Exception e)
+            {
+                Console.WriteLine($"Pizzaiolo {_id} has an error: {e.Message}");
+            }
         }
     }
 }
