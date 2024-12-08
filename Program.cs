@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading;
 //no need to add any other using directives
 
@@ -32,6 +34,9 @@ namespace pizzeria //this is useless, if you remove it your assignment will be N
         
         static void Main(string[] args)
         {
+            var sw = new Stopwatch();
+            sw.Start();
+
             if (n_customers % n_slices != 0) //check if n_customers is a multiple of n_slices DO NOT ALTER THIS CODE.
             {
                 throw new Exception("n_customers must be a multiple of n_slices");
@@ -48,8 +53,6 @@ namespace pizzeria //this is useless, if you remove it your assignment will be N
             //activate customers
             ActivateCustomers();
             // insert code here if necessary
-
-            // Thread.Sleep(100);
             
             foreach (var thread in customerThreads)
             {
@@ -65,6 +68,9 @@ namespace pizzeria //this is useless, if you remove it your assignment will be N
             Console.WriteLine($"Pickup location: There are {pickUp.Count} pizzas left.");
             Console.WriteLine($"Working location: There are {workingsurface.Count} slices left.");
             Console.WriteLine($"Order location: There are {order.Count} orders left.");
+
+            sw.Stop();
+            Console.WriteLine(sw.Elapsed);
         }
 
         private static void ActivateCustomers() // todo: implement this method
@@ -76,8 +82,6 @@ namespace pizzeria //this is useless, if you remove it your assignment will be N
                 customerThreads[id] = new Thread(customers[id].Start);
                 customerThreads[id].Start();
             }
-
-
         }
         
         private static void ActivatePizzaioli() //todo: implement this method
@@ -89,7 +93,6 @@ namespace pizzeria //this is useless, if you remove it your assignment will be N
                 pizzaioliThreads[id] = new Thread(pizzaioli[id].Start);
                 pizzaioliThreads[id].Start();
             }
-        
         }
         //
         private static void InitPeople()
