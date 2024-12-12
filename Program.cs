@@ -17,9 +17,12 @@ namespace pizzeria //this is useless, if you remove it your assignment will be N
         public static Semaphore slice_ready = new(0, n_customers);
         
         // Locks for thread safety
+        //TODO: Enigste waar ik over twijfel is het gebruiken van de statische objecten anders kunnen we een mutex gebruiken.
         public static object orderLock = new();
         public static object pickUpLock = new();
         public static object workingSurfaceLock = new();
+        private static Thread[] pizzaioliThreads;
+        private static Thread[] customerThreads;
         
         //do not change any class variable under this line
         public static LinkedList<PizzaOrder> order = new();
@@ -29,19 +32,15 @@ namespace pizzeria //this is useless, if you remove it your assignment will be N
         public static Pizzaiolo[] pizzaioli = new Pizzaiolo[n_pizzaioli];
         public static Customer[] customers = new Customer[n_customers];
         
-        private static Thread[] pizzaioliThreads;
-        private static Thread[] customerThreads;
-        
         static void Main(string[] args)
         {
-            var sw = new Stopwatch();
-            sw.Start();
-
             if (n_customers % n_slices != 0) //check if n_customers is a multiple of n_slices DO NOT ALTER THIS CODE.
             {
                 throw new Exception("n_customers must be a multiple of n_slices");
             }
             //init environment variables here if needed
+            // var sw = new Stopwatch();
+            // sw.Start();
             pizzaioliThreads = new Thread[n_pizzaioli];
             customerThreads = new Thread[n_customers];
             
@@ -69,8 +68,8 @@ namespace pizzeria //this is useless, if you remove it your assignment will be N
             Console.WriteLine($"Working location: There are {workingsurface.Count} slices left.");
             Console.WriteLine($"Order location: There are {order.Count} orders left.");
 
-            sw.Stop();
-            Console.WriteLine(sw.Elapsed);
+            // sw.Stop();
+            // Console.WriteLine($"Time elapsed: {sw.ElapsedMilliseconds } ms");
         }
 
         private static void ActivateCustomers() // todo: implement this method
