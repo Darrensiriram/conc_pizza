@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 //no need to add any other using directives
 
@@ -36,6 +37,9 @@ namespace pizzeria //this is useless, if you remove it your assignment will be N
             {
                 throw new Exception("n_customers must be a multiple of n_slices");
             }
+
+            // var sw = new Stopwatch();
+            // sw.Start();
             //init environment variables here if needed
             pizzaioliThreads = new Thread[n_pizzaioli];
             customerThreads = new Thread[n_customers];
@@ -65,6 +69,9 @@ namespace pizzeria //this is useless, if you remove it your assignment will be N
             Console.WriteLine($"Pickup location: There are {pickUp.Count} pizzas left.");
             Console.WriteLine($"Working location: There are {workingsurface.Count} slices left.");
             Console.WriteLine($"Order location: There are {order.Count} orders left.");
+            
+            // sw.Stop();
+            // Console.WriteLine($"Execution time: {sw.ElapsedMilliseconds}ms");
         }
 
         private static void ActivateCustomers() // todo: implement this method
